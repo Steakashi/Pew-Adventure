@@ -41,7 +41,7 @@ public class HeroController : MonoBehaviour {
     public Image forceLevel;
     public Image dragTime;
     public Camera mainCamera;
-    public float zoom;
+    public float zoom = 10;
     public float timeToTurn;
     public float timeToDrag;
 
@@ -117,7 +117,8 @@ public class HeroController : MonoBehaviour {
         {
 
             // First, reset the velocity of the hero. It allows to apply a new force to it.
-            ship.velocity = new Vector3(0, 0, 0);
+            ship.velocity = Vector3.zero;
+			ship.angularVelocity = Vector3.zero;
 
             // Then create the force vector, clamp it et apply it to the hero.
             Vector3 forceVector = new Vector3(fingerPositionStored.x - Input.mousePosition.x, 0, fingerPositionStored.y - Input.mousePosition.y);
@@ -125,7 +126,11 @@ public class HeroController : MonoBehaviour {
             ship.AddForce(forceVector);
 
             markerTime = Time.time + timeToDrag;
-
+			
+			this.GetComponent<Gravity>().reset_raycast();
+			
+			//transform.eulerAngles = new Vector3(transform.rotation.eulerAngles.x, Mathf.Atan2(ship.velocity.x, ship.velocity.z) * Mathf.Rad2Deg + 0, transform.rotation.eulerAngles.z);
+			
         }
 
         // Reset time values used for slow-motion.
@@ -148,12 +153,12 @@ public class HeroController : MonoBehaviour {
         forceApplied = true;
         letCircleGrowing = false;
         cameraZoom = false;
+	
 
     }
 
     private void OnMouseDown()
     {
-        Debug.Log("click");
         markerTimeForClick = Time.time + clickTime;
     }
 
@@ -272,7 +277,8 @@ public class HeroController : MonoBehaviour {
 
         // If the hero isn't being dragged and if the hero has suffisant velocity, we constantly making him face the direction it goes.
         // TODO : make the player following the direction with a specific late.
-        if (!dragParametersInitialized && ship.velocity.magnitude > 3)
+		//&& ship.velocity.sqrMagnitude > 3
+        if (!dragParametersInitialized && ship.velocity.sqrMagnitude > 3)
         {
 
 
@@ -282,11 +288,22 @@ public class HeroController : MonoBehaviour {
 			
             //transform.eulerAngles = new Vector3(0, Mathf.Atan2(ship.velocity.x, ship.velocity.z) * Mathf.Rad2Deg + 0, 0);
             
-			transform.eulerAngles = new Vector3(transform.rotation.eulerAngles.x, Mathf.Atan2(ship.velocity.x, ship.velocity.z) * Mathf.Rad2Deg + 0, transform.rotation.eulerAngles.z);
+			
+			/*
+			transform.eulerAngles = Vector3.Slerp(transform.rotation.eulerAngles, new Vector3(
+				transform.rotation.eulerAngles.x, Mathf.Atan2(ship.velocity.x, ship.velocity.z) * Mathf.Rad2Deg, transform.rotation.eulerAngles.z
+			), 100);
+			/*
+			transform.eulerAngles = new Vector3(
+				transform.rotation.eulerAngles.x, Mathf.Atan2(ship.velocity.x, ship.velocity.z) * Mathf.Rad2Deg, transform.rotation.eulerAngles.z
+			);*/
 			
 			//transform.eulerAngles = Vector3.Lerp(Vector3.zero, new Vector3(0, Mathf.Atan2(ship.velocity.x, ship.velocity.z) * Mathf.Rad2Deg - 0, 0), 10);
-            //transform.Rotate(90, 90, 90);
-
+            
+			//transform.Rotate(90, 90, 90);
+			
+			
+			
             //float beginningAngleValue = Mathf.Atan2((mouseInputStored.x - fingerPositionStored.x), (mouseInputStored.y - fingerPositionStored.y)) * Mathf.Rad2Deg;
             /*float beginningAngleValue = markerAngle;
             float finalAngleValue = Mathf.Atan2(ship.velocity.x, ship.velocity.z) * Mathf.Rad2Deg + 90;
