@@ -896,9 +896,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 126ef06389aa7b24e99d2693b30eddd2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gravityZone: {fileID: 475282713}
-  m_Rigidbody: {fileID: 475282714}
+  m_rigidbody: {fileID: 475282714}
   gravity_min_distance: 1
+  rotation_factor: 100
+  force_factor: 1000
+  force_limit: 1
 --- !u!114 &475282712
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2821,9 +2823,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 126ef06389aa7b24e99d2693b30eddd2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gravityZone: {fileID: 475282713}
-  m_Rigidbody: {fileID: 1549230811}
+  m_rigidbody: {fileID: 0}
   gravity_min_distance: 1
+  rotation_factor: 0
+  force_factor: 0
+  force_limit: 0
 --- !u!64 &1549230815
 MeshCollider:
   m_ObjectHideFlags: 0

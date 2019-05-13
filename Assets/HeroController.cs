@@ -127,8 +127,6 @@ public class HeroController : MonoBehaviour {
 
             markerTime = Time.time + timeToDrag;
 			
-			this.GetComponent<Gravity>().reset_raycast();
-			
 			//transform.eulerAngles = new Vector3(transform.rotation.eulerAngles.x, Mathf.Atan2(ship.velocity.x, ship.velocity.z) * Mathf.Rad2Deg + 0, transform.rotation.eulerAngles.z);
 			
         }
