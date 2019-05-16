@@ -33,11 +33,24 @@ public class EnemyStandardMovements : MonoBehaviour {
 		beginToDecelerate = distanceLimit * 2f;
 		speedNavStoredValue = agent.speed;
 		turnSpeedNavStoredValue = agent.angularSpeed;
+		agent.updatePosition = false;
+		agent.updateRotation = false;
+		//agent.updateUpAxis = false;
 	}
 
 	void Update(){
 
         agent.destination = hero.position;
+		m_rigidbody.transform.position = agent.nextPosition;
+		transform.LookAt(
+			new Vector3(
+				hero.transform.position.x, 
+				m_rigidbody.transform.position.y,
+				hero.transform.position.z 
+			)
+		);
+    
+		Debug.Log(agent.transform.position);
 
         if (agent.remainingDistance < distanceFromHero)
 		{
@@ -66,10 +79,10 @@ public class EnemyStandardMovements : MonoBehaviour {
 	
 	// Update is called once per frame
 	void LateUpdate () {
-
+/*
         if (isChasing)
         {
-
+			
 			if (isTurningAround) {
 
 				if (agent.remainingDistance < distanceLimit) {
@@ -92,22 +105,14 @@ public class EnemyStandardMovements : MonoBehaviour {
 					
 			}
 
-			//navMesh.angularSpeed = turnSpeedNavStoredValue + ((1 - speedRatio) * turnSpeedNavStoredValue);
-			//navMesh.speed = speedNavStoredValue * speedRatio;
-			//navMesh.velocity = Vector3.zero;
+
 
             m_rigidbody = GetComponent<Rigidbody>();
 			m_rigidbody.AddForce(transform.forward * Time.deltaTime * 80 * speed * speedRatio);
 
-		
-			//Debug.Log (speedRatio);
-			//navMesh.speed = speedNavStoredValue * speedRatio;
-			//Debug.Log(navMesh.speed);
-            /*Quaternion targetRotation = Quaternion.LookRotation(hero.position - transform.position);
-            float str = Mathf.Min(strength * Time.deltaTime, 1);
-            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime);*/
         }
 
+*/
 
     }
 

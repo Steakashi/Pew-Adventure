@@ -98,7 +98,13 @@ namespace UnityStandardAssets.Cameras
                 }
             }
             var rollRotation = Quaternion.LookRotation(targetForward, m_RollUp);
-
+			/*
+			rollRotation = Quaternion.Euler(
+				transform.rotation.eulerAngles.x,
+				rollRotation.eulerAngles.y,
+				transform.rotation.eulerAngles.z
+			);
+*/
             // and aligning with the target object's up direction (i.e. its 'roll')
             m_RollUp = m_RollSpeed > 0 ? Vector3.Slerp(m_RollUp, targetUp, m_RollSpeed*deltaTime) : Vector3.up;
             transform.rotation = Quaternion.Lerp(transform.rotation, rollRotation, m_TurnSpeed*m_CurrentTurnAmount*deltaTime);

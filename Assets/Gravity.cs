@@ -57,7 +57,7 @@ public class Gravity : MonoBehaviour {
 	
 	void Update()
 	{
-		
+			
 		if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.down), out hit, gravity_min_distance * 2, 1 << 8))
 		{
 			// Add Force if ship is lower to ground than gravity_min_distance
