@@ -41,7 +41,14 @@ public class EnemyStandardMovements : MonoBehaviour {
 	void Update(){
 
         agent.destination = hero.position;
-		m_rigidbody.transform.position = agent.nextPosition;
+		m_rigidbody.transform.position = new Vector3(
+			agent.nextPosition.x, 
+			m_rigidbody.transform.position.y,
+			agent.nextPosition.z 
+		)
+		
+		;
+		
 		transform.LookAt(
 			new Vector3(
 				hero.transform.position.x, 
@@ -49,7 +56,7 @@ public class EnemyStandardMovements : MonoBehaviour {
 				hero.transform.position.z 
 			)
 		);
-    
+		
 		Debug.Log(agent.transform.position);
 
         if (agent.remainingDistance < distanceFromHero)

@@ -1297,7 +1297,7 @@ MonoBehaviour:
   strength: 0
   speed: 0.5
   distanceFromHero: 50
-  distanceLimit: 5
+  distanceLimit: 40
   distanceMin: 3
 --- !u!23 &640412641
 MeshRenderer:
