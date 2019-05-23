@@ -25,6 +25,7 @@ public class HeroController : MonoBehaviour {
     private float zoomValue = 0;
     private Vector3 recordedPosition;
     private float maxSliderValue = 160f;
+	private bool isEnabled = true;
 
     private float gr_TimeRatio = 0.1f;
     private float gr_ScaleLimit = 0.02f;
@@ -64,7 +65,9 @@ public class HeroController : MonoBehaviour {
     }
 	
 	void OnMouseDrag()
-    {
+    {	
+		if (!isEnabled){ return; }
+		
         // If this is the first frame dragging, initialize a few values.
         if (hasDragBegun == false)
         {
@@ -112,6 +115,7 @@ public class HeroController : MonoBehaviour {
 
     void OnMouseUp()
     {
+		if (!isEnabled){ return; }
 
         if (Time.time > markerTime && Time.time > markerTimeForClick)
         {
@@ -226,6 +230,8 @@ public class HeroController : MonoBehaviour {
 	void Update()
     {
 
+		Debug.Log(isEnabled);
+	
         if(Time.time > markerTimeForClick)
         {
             growCircle();
@@ -323,4 +329,5 @@ public class HeroController : MonoBehaviour {
     }
 
     public bool GetSlowMoState() { return dragParametersInitialized; }
+	void OnDisable() { isEnabled = false; }
 }

@@ -56,8 +56,6 @@ public class EnemyStandardMovements : MonoBehaviour {
 				hero.transform.position.z 
 			)
 		);
-		
-		Debug.Log(agent.transform.position);
 
         if (agent.remainingDistance < distanceFromHero)
 		{

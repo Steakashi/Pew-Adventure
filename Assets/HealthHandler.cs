@@ -15,6 +15,7 @@ public class HealthHandler : MonoBehaviour {
     public float invincibilityTime;
     public List<GameObject> thingsToExplode;
     public GameObject explosionFX;
+	public GameObject menu;
 
 	// Use this for initialization
 	void Start () {
@@ -48,12 +49,21 @@ public class HealthHandler : MonoBehaviour {
             float value = (currentLifePoints / maxLifePoints) * healthBarMaxWidth;
             healthBar.rectTransform.SetSizeWithCurrentAnchors(new RectTransform.Axis(), value - 1);
 
-            if(currentLifePoints <= 0) { StartCoroutine("DestroyObject"); }
+            if(currentLifePoints <= 0) {
+				StartCoroutine("DestroyObject");
+				DisableScripts();
+			}
 
             invincibilityTimeMarker = Time.time + invincibilityTime;
         }
 
     }
+	
+	void DisableScripts()
+	{
+		MonoBehaviour[] scripts = gameObject.GetComponents<MonoBehaviour>();
+		foreach(MonoBehaviour script in scripts){ script.enabled = false; }
+	}
 
     IEnumerator DestroyObject()
     {
@@ -68,5 +78,7 @@ public class HealthHandler : MonoBehaviour {
         yield return new WaitForSeconds(explosionFXTime);
 
         //Destroy(transform.parent.gameObject);
+
+		menu.SetActive(true);
     }
 }
