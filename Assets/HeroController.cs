@@ -229,8 +229,6 @@ public class HeroController : MonoBehaviour {
 
 	void Update()
     {
-
-		Debug.Log(isEnabled);
 	
         if(Time.time > markerTimeForClick)
         {

@@ -5,7 +5,6 @@ using UnityEngine.AI;
 
 public class EnemyStandardWeapon : MonoBehaviour {
 
-	private NavMeshAgent agent;
     private EnemyStandardMovements movementsScript;
 	private Transform hero;
 	private RaycastHit hit;
@@ -27,7 +26,6 @@ public class EnemyStandardWeapon : MonoBehaviour {
 	void Start () {
 
 		hero = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
-		agent = GetComponent<NavMeshAgent>();
         movementsScript = GetComponent<EnemyStandardMovements>();
 
 	}

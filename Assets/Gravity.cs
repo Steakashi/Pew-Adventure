@@ -2,6 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public static class ExtensionMethods {
+     
+    public static float Map (this float value, float from1, float to1, float from2, float to2) {
+        return (value - from1) / (to1 - from1) * (to2 - from2) + from2;
+    }
+       
+}
+
+
 public class Gravity : MonoBehaviour {
 
     public Rigidbody m_rigidbody;
@@ -30,7 +39,11 @@ public class Gravity : MonoBehaviour {
 	
 	void addForceWithClamp(float force_value)
 	{
-		m_rigidbody.AddForce(Vector3.up * force_value * force_factor);
+		float hero_angle = Vector3.Angle(Vector3.up, transform.TransformDirection(Vector3.up)).Map(
+			0.0f, 90f, 1f, 0.01f
+		);
+		
+		m_rigidbody.AddForce(Vector3.up * force_value * force_factor * hero_angle);
 		m_rigidbody.velocity = new Vector3(
 			m_rigidbody.velocity.x,
 			Mathf.Clamp(m_rigidbody.velocity.y, -1000, force_value * force_limit),
@@ -57,7 +70,7 @@ public class Gravity : MonoBehaviour {
 	
 	void Update()
 	{
-			
+		Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.down), Color.green);
 		if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.down), out hit, gravity_min_distance * 2, 1 << 8))
 		{
 			// Add Force if ship is lower to ground than gravity_min_distance
