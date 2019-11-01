@@ -10,7 +10,7 @@ public class EnemyStandardMovements : MonoBehaviour {
 	private Transform hero;
 	
 	private bool isChasing = false;
-	private int turn_direction = 1;
+	private int pivot_direction = 1;
 	private bool in_visu = false;
 	
 	private int speed_offset = 10;
@@ -18,7 +18,7 @@ public class EnemyStandardMovements : MonoBehaviour {
 	public int max_speed;			// Speed limit
 	public int acceleration;		// Force vector applied to enemy, ponderate by distance
 	public int rotation;			// Time taken to face Hero
-	public int pivot_speed;			// Force vector applied to enemy side when pivoting
+	public int pivot_force;			// Force vector applied to enemy side when pivoting
 	public int distance_max_radius;
 	public int distance_min_radius; 
 
@@ -53,25 +53,42 @@ public class EnemyStandardMovements : MonoBehaviour {
 		agent.nextPosition = m_rigidbody.position;
 	}
 	
-	void rotate(){
+	void apply_rotate(){
 		Vector3 direction = hero.position - transform.position;
 		Quaternion to_rotation = Quaternion.LookRotation(direction);
 		transform.rotation = Quaternion.Slerp(transform.rotation, to_rotation, rotation * Time.deltaTime);
 	}
 	
-	void apply_turning_movement(){
-		//m_rigidbody.AddForce(transform.right * turn_direction * rotation);
+	void apply_pivot(Vector3 direction)
+    {
+        float distance = direction.magnitude;
+        if (distance < distance_max_radius)
+        {
+            Debug.Log("APPLY PIVOT");
+            m_rigidbody.AddForce(transform.right * pivot_direction * pivot_force);
+        }
 	}
 	
+    void apply_forward_movement()
+    {
+        m_rigidbody.AddForce(transform.forward * acceleration);
+        m_rigidbody.velocity = new Vector3(
+            Mathf.Clamp(m_rigidbody.velocity.x, -max_speed, max_speed),
+            m_rigidbody.velocity.y,
+            Mathf.Clamp(m_rigidbody.velocity.z, -max_speed, max_speed)
+        );
+    }
+
 	void apply_independant_movement(Vector3 direction){
 		agent.Warp(transform.position);
 
 		float distance = direction.magnitude;
-		//float force_vector_direction = (direction.normalized  * acceleration Time.deltaTime).sqrMagnitude;
-		
-		// Enemy is in interaction radius : we ponderate force vector depending of middle radius point.
-		// We also allow pivot movement
-		Debug.Log(distance);
+        //float force_vector_direction = (direction.normalized  * acceleration Time.deltaTime).sqrMagnitude;
+
+        // Enemy is in interaction radius : we ponderate force vector depending of middle radius point.
+        // We also allow pivot movement
+
+        /*
 		if (distance_max_radius > distance){
 			float middle_radius = (distance_max_radius + distance_min_radius) / 2;
 			float radius_segment = (distance_max_radius - distance_min_radius) / 2;
@@ -91,11 +108,14 @@ public class EnemyStandardMovements : MonoBehaviour {
 		
 		m_rigidbody.AddForce(
 			transform.forward * Mathf.Clamp(force_to_apply, -max_speed, max_speed)
-		);
-		
-		rotate();
-			
-	}
+		);*/
+
+        apply_rotate();
+        apply_forward_movement();
+        apply_pivot(direction);
+
+
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -135,6 +155,6 @@ public class EnemyStandardMovements : MonoBehaviour {
 	}
 	
 	public bool GetChasingState() { return isChasing; }
-	public void InvertRotation() { turn_direction *= (-1); }
+	public void InvertRotation() { pivot_direction *= (-1); }
 	
 }
