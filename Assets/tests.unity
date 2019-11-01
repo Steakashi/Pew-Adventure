@@ -1460,7 +1460,6 @@ GameObject:
   - component: {fileID: 640412645}
   - component: {fileID: 640412644}
   - component: {fileID: 640412647}
-  - component: {fileID: 640412640}
   - component: {fileID: 640412646}
   - component: {fileID: 640412648}
   - component: {fileID: 640412649}
@@ -1473,22 +1472,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 40
   m_IsActive: 1
---- !u!114 &640412640
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 640412639}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9fb4f1e95b7a0b74f9867fefcde6e5b3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  strength: 1
-  speed: 1
-  distanceFromHero: 50
-  distanceLimit: 40
-  distanceMin: 3
 --- !u!23 &640412641
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1674,10 +1657,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab1700c1ae096e640a979faf18290cb2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  max_speed: 1
+  max_speed: 5
   acceleration: 10
   rotation: 5
-  pivot_speed: 0
+  pivot_force: 50
   distance_max_radius: 20
   distance_min_radius: 5
 --- !u!1 &664475547

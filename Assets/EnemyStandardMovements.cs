@@ -64,7 +64,6 @@ public class EnemyStandardMovements : MonoBehaviour {
         float distance = direction.magnitude;
         if (distance < distance_max_radius)
         {
-            Debug.Log("APPLY PIVOT");
             m_rigidbody.AddForce(transform.right * pivot_direction * pivot_force);
         }
 	}
