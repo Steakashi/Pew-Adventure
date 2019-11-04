@@ -20,7 +20,8 @@ public class EnemyStandardMovements : MonoBehaviour {
 	public int rotation;			// Time taken to face Hero
 	public int pivot_force;			// Force vector applied to enemy side when pivoting
 	public int distance_max_radius;
-	public int distance_min_radius; 
+	public int distance_min_radius;
+    public int braking;             // Reduction applied to enemy velocity when approaching the Hero
 
 	// Use this for initialization
 	void Start () {
@@ -53,29 +54,71 @@ public class EnemyStandardMovements : MonoBehaviour {
 		agent.nextPosition = m_rigidbody.position;
 	}
 	
-	void apply_rotate(){
+	void apply_orientation(){
 		Vector3 direction = hero.position - transform.position;
 		Quaternion to_rotation = Quaternion.LookRotation(direction);
 		transform.rotation = Quaternion.Slerp(transform.rotation, to_rotation, rotation * Time.deltaTime);
 	}
 	
-	void apply_pivot(Vector3 direction)
+	void apply_pivot(float distance)
     {
-        float distance = direction.magnitude;
         if (distance < distance_max_radius)
         {
-            m_rigidbody.AddForce(transform.right * pivot_direction * pivot_force);
+            m_rigidbody.AddForce((transform.right * pivot_direction + transform.forward)  * pivot_force * Time.deltaTime * 10);
+            Debug.DrawRay(transform.position, (transform.right * pivot_direction + transform.forward) * pivot_force * Time.deltaTime * 10, Color.yellow);
         }
 	}
 	
-    void apply_forward_movement()
+    void apply_forward_movement(float distance)
     {
-        m_rigidbody.AddForce(transform.forward * acceleration);
-        m_rigidbody.velocity = new Vector3(
+
+        // Calculate max_speed limit factor
+        float acceleration_factor = max_speed - m_rigidbody.velocity.magnitude;
+
+        // Calculate distance factor reduction
+
+
+        float middle_radius = (distance_max_radius + distance_min_radius) / 2;
+        float radius_segment = (distance_max_radius - distance_min_radius) / 2;
+        float radius_weighting = (distance - middle_radius) / radius_segment;
+
+        if (radius_weighting < 1)
+        {
+               /*
+            // If enemy is coming too fast, apply a little brake
+            Debug.Log(m_rigidbody.velocity.magnitude);
+            if ((m_rigidbody.velocity.magnitude > (max_speed / 2)) && (acceleration_factor > 0))
+            {
+                acceleration_factor *= -1;
+            }
+            else
+            {
+                acceleration_factor *= radius_weighting * 0.1f;
+            }*/
+            acceleration_factor *= radius_weighting; 
+        }
+        
+
+
+        // Apply final force vector
+        m_rigidbody.AddForce(transform.forward * acceleration_factor * Time.deltaTime * 10);
+        Debug.DrawRay(transform.position, transform.forward * acceleration_factor * Time.deltaTime * 10, Color.cyan);
+
+ 
+        if (distance < distance_max_radius)
+        {
+            m_rigidbody.velocity = new Vector3(
+                m_rigidbody.velocity.x * (1 - (braking / 1000.0f)),
+                m_rigidbody.velocity.y,
+                m_rigidbody.velocity.z * (1 - (braking / 1000.0f))
+            );
+        }
+
+        /*m_rigidbody.velocity = new Vector3(
             Mathf.Clamp(m_rigidbody.velocity.x, -max_speed, max_speed),
             m_rigidbody.velocity.y,
             Mathf.Clamp(m_rigidbody.velocity.z, -max_speed, max_speed)
-        );
+        );*/
     }
 
 	void apply_independant_movement(Vector3 direction){
@@ -109,9 +152,10 @@ public class EnemyStandardMovements : MonoBehaviour {
 			transform.forward * Mathf.Clamp(force_to_apply, -max_speed, max_speed)
 		);*/
 
-        apply_rotate();
-        apply_forward_movement();
-        apply_pivot(direction);
+        apply_orientation();
+        apply_forward_movement(distance);
+        apply_pivot(distance);
+        SetChasingState(distance);
 
 
     }
@@ -129,14 +173,14 @@ public class EnemyStandardMovements : MonoBehaviour {
 		{
 			if (hit.rigidbody != null)
 			{
-				Debug.DrawRay(transform.position, direction, Color.red);
+				//Debug.DrawRay(transform.position, direction, Color.red);
 				update_follow_state(true);
 				apply_independant_movement(direction);
 
 			}
 			else
 			{
-				Debug.DrawRay(transform.position, direction, Color.green);
+				//Debug.DrawRay(transform.position, direction, Color.green);
 				update_follow_state(false);
 				apply_agent_movement();
 			}
@@ -153,7 +197,12 @@ public class EnemyStandardMovements : MonoBehaviour {
 		
 	}
 	
-	public bool GetChasingState() { return isChasing; }
 	public void InvertRotation() { pivot_direction *= (-1); }
+    public bool GetChasingState() { return isChasing; }
+    public void SetChasingState(float distance)
+    {
+        if (distance < distance_max_radius){ isChasing = true; }
+        else { isChasing = false; }
+    }
 	
 }

@@ -1599,7 +1599,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 640412639}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 64d04b495f7f90643946db9ccb52b9c0, type: 3}
   m_Name: 
@@ -1657,12 +1657,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab1700c1ae096e640a979faf18290cb2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  max_speed: 5
-  acceleration: 10
+  max_speed: 50
+  acceleration: 50
   rotation: 5
-  pivot_force: 50
+  pivot_force: 10
   distance_max_radius: 20
-  distance_min_radius: 5
+  distance_min_radius: 10
+  braking: 10
 --- !u!1 &664475547
 GameObject:
   m_ObjectHideFlags: 0
