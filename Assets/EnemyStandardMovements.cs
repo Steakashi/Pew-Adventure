@@ -15,6 +15,9 @@ public class EnemyStandardMovements : MonoBehaviour {
 	
 	private int speed_offset = 10;
 	
+	private const int SPEED = 10;
+	private const int PIVOT = 10;
+	
 	public int max_speed;			// Speed limit
 	public int acceleration;		// Force vector applied to enemy, ponderate by distance
 	public int rotation;			// Time taken to face Hero
@@ -60,51 +63,46 @@ public class EnemyStandardMovements : MonoBehaviour {
 		transform.rotation = Quaternion.Slerp(transform.rotation, to_rotation, rotation * Time.deltaTime);
 	}
 	
-	void apply_pivot(float distance)
+	Vector3 apply_pivot(float distance)
     {
         if (distance < distance_max_radius)
         {
+			return ((transform.right * pivot_direction + transform.forward)  * pivot_force * PIVOT);
+			/*
             m_rigidbody.AddForce((transform.right * pivot_direction + transform.forward)  * pivot_force * Time.deltaTime * 10);
             Debug.DrawRay(transform.position, (transform.right * pivot_direction + transform.forward) * pivot_force * Time.deltaTime * 10, Color.yellow);
-        }
+			*/
+		}
+		else
+		{
+			return Vector3.zero;
+		}
 	}
 	
-    void apply_forward_movement(float distance)
+    Vector3 get_acceleration_movement(float distance)
     {
 
         // Calculate max_speed limit factor
         float acceleration_factor = max_speed - m_rigidbody.velocity.magnitude;
 
         // Calculate distance factor reduction
-
-
         float middle_radius = (distance_max_radius + distance_min_radius) / 2;
         float radius_segment = (distance_max_radius - distance_min_radius) / 2;
         float radius_weighting = (distance - middle_radius) / radius_segment;
 
         if (radius_weighting < 1)
         {
-               /*
-            // If enemy is coming too fast, apply a little brake
-            Debug.Log(m_rigidbody.velocity.magnitude);
-            if ((m_rigidbody.velocity.magnitude > (max_speed / 2)) && (acceleration_factor > 0))
-            {
-                acceleration_factor *= -1;
-            }
-            else
-            {
-                acceleration_factor *= radius_weighting * 0.1f;
-            }*/
             acceleration_factor *= radius_weighting; 
         }
-        
-
+        return transform.forward * acceleration_factor * SPEED;
+		//return (transform.forward * acceleration_factor * Time.deltaTime * SPEED);
 
         // Apply final force vector
+		/*
         m_rigidbody.AddForce(transform.forward * acceleration_factor * Time.deltaTime * 10);
         Debug.DrawRay(transform.position, transform.forward * acceleration_factor * Time.deltaTime * 10, Color.cyan);
 
- 
+		
         if (distance < distance_max_radius)
         {
             m_rigidbody.velocity = new Vector3(
@@ -113,13 +111,23 @@ public class EnemyStandardMovements : MonoBehaviour {
                 m_rigidbody.velocity.z * (1 - (braking / 1000.0f))
             );
         }
+		*/
 
-        /*m_rigidbody.velocity = new Vector3(
-            Mathf.Clamp(m_rigidbody.velocity.x, -max_speed, max_speed),
-            m_rigidbody.velocity.y,
-            Mathf.Clamp(m_rigidbody.velocity.z, -max_speed, max_speed)
-        );*/
+
     }
+	
+	bool obstacle_detected(Vector3 acceleration_force)
+	{
+	
+		Vector3 next_position = m_rigidbody.transform.position + new Vector3(m_rigidbody.velocity.x, 0, m_rigidbody.velocity.z);
+		Debug.DrawRay(transform.position, next_position - m_rigidbody.transform.position, Color.yellow);
+		Debug.DrawRay(transform.position +(next_position - m_rigidbody.transform.position), Vector3.down * 1000, Color.yellow);
+		
+		RaycastHit hit;
+		if (Physics.Raycast(next_position, Vector3.down, out hit, Mathf.Infinity) && hit.collider.tag == "WorldLimit"){ return true;}
+		return false;
+	
+	}
 
 	void apply_independant_movement(Vector3 direction){
 		agent.Warp(transform.position);
@@ -153,10 +161,32 @@ public class EnemyStandardMovements : MonoBehaviour {
 		);*/
 
         apply_orientation();
-        apply_forward_movement(distance);
-        apply_pivot(distance);
-        SetChasingState(distance);
+		set_chasing_state(distance);
+		
+        Vector3 acceleration_force = get_acceleration_movement(distance);
+        Vector3 pivot_force = apply_pivot(distance);
 
+		//Debug.DrawRay(transform.position, acceleration_force, Color.red);
+		//Debug.DrawRay(transform.position, pivot_force, Color.blue);
+		//Debug.DrawRay(transform.position, acceleration_force + pivot_force, Color.green);
+		
+		
+		if (obstacle_detected(acceleration_force))
+		{
+			acceleration_force *= -1;
+		}
+
+		m_rigidbody.AddForce(acceleration_force * Time.deltaTime);
+		if (distance < distance_max_radius)
+        {
+            m_rigidbody.velocity = new Vector3(
+                m_rigidbody.velocity.x * (1 - (braking / 1000.0f)),
+                m_rigidbody.velocity.y,
+                m_rigidbody.velocity.z * (1 - (braking / 1000.0f))
+            );
+        }
+		
+		m_rigidbody.AddForce(pivot_force * Time.deltaTime);
 
     }
 	
@@ -199,7 +229,7 @@ public class EnemyStandardMovements : MonoBehaviour {
 	
 	public void InvertRotation() { pivot_direction *= (-1); }
     public bool GetChasingState() { return isChasing; }
-    public void SetChasingState(float distance)
+    public void set_chasing_state(float distance)
     {
         if (distance < distance_max_radius){ isChasing = true; }
         else { isChasing = false; }

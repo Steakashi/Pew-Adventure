@@ -9,6 +9,7 @@ TagManager:
   - Robot
   - World
   - Menu
+  - WorldLimit
   layers:
   - Default
   - TransparentFX
@@ -20,7 +21,7 @@ TagManager:
   - 
   - World
   - Menu
-  - 
+  - WorldLimit
   - 
   - 
   - 
